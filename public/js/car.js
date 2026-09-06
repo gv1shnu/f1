@@ -9,8 +9,8 @@ const ACCEL = 34;              // m/s^2 throttle
 const BRAKE = 60;              // m/s^2
 const REVERSE_MAX = 14;
 const ENGINE_DRAG = 6;         // coasting deceleration
-const OFFTRACK_DRAG = 34;      // extra drag on the grass
-const OFFTRACK_MAX = 26;       // speed cap off track
+const OFFTRACK_DRAG = 14;      // extra drag on the grass (must be < ACCEL so you can drive back on)
+const OFFTRACK_MAX = 30;       // speed cap off track
 const STEER_RATE = 2.2;        // rad/s at low speed
 const GRIP_FADE = 0.55;        // how much steering fades with speed
 
@@ -126,6 +126,19 @@ export class Car {
   }
 
   consumeNewLap() { const t = this._newLap; this._newLap = null; return t; }
+
+  // Snap back onto the racing line at the nearest point, facing forward.
+  // A reliable "get unstuck" for when the car ends up beached on the grass.
+  respawn() {
+    const near = this.track.nearest(this.pos, this.trackIndex);
+    this.pos.x = near.point.x;
+    this.pos.z = near.point.z;
+    this.heading = Math.atan2(near.tangent.x, near.tangent.z);
+    this.speed = 0;
+    this.steer = 0;
+    this.trackIndex = near.index;
+    this._prevIndex = near.index;
+  }
 
   // Serialisable state for the network.
   netState(name) {

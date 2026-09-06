@@ -177,6 +177,7 @@ const keymap = {
 addEventListener('keydown', (e) => {
   if (keymap[e.code]) { input[keymap[e.code]] = true; e.preventDefault(); }
   if (e.code === 'KeyC') camMode = (camMode + 1) % CAM.length;
+  if (e.code === 'KeyR') { car.respawn(); hud.flash('↺ BACK ON TRACK', 1000); }
   if (e.code === 'KeyM') {
     const m = audio.toggleMute();
     hud.flash(m ? '🔇 MUTED' : '🔊 SOUND ON', 900);
