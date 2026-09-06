@@ -1,0 +1,13 @@
+# Render.com blueprint — deploys the game straight from this repo.
+# In the Render dashboard: New → Blueprint → pick the gv1shnu/f1 repo.
+# WebSockets work out of the box on Render web services.
+services:
+  - type: web
+    name: apex-tv-f1
+    runtime: node
+    plan: free
+    buildCommand: npm install
+    startCommand: node server.js
+    envVars:
+      - key: NODE_ENV
+        value: production
