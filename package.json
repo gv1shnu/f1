@@ -1,0 +1,14 @@
+{
+  "name": "apex-tv-f1",
+  "version": "0.1.0",
+  "description": "Web-based multiplayer F1 driving game with a sunset cockpit view (Three.js + WebSockets).",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "ws": "^8.18.0"
+  }
+}
