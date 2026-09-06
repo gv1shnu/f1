@@ -17,6 +17,7 @@ import { WebSocketServer } from 'ws';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC_DIR = path.join(__dirname, 'public');
 const PORT = process.env.PORT || 3000;
+const IS_PROD = process.env.NODE_ENV === 'production';
 
 const MIME = {
   '.html': 'text/html; charset=utf-8',
@@ -51,10 +52,15 @@ const server = http.createServer((req, res) => {
       return res.end('Not found');
     }
     const ext = path.extname(filePath).toLowerCase();
+    // In production, let the HTML revalidate but cache versioned assets; in dev,
+    // never cache so edits always show up on reload.
+    let cache = 'no-store, must-revalidate';
+    if (IS_PROD) {
+      cache = (ext === '.html') ? 'no-cache' : 'public, max-age=86400';
+    }
     res.writeHead(200, {
       'Content-Type': MIME[ext] || 'application/octet-stream',
-      // Dev server: never cache, so edits show up on reload.
-      'Cache-Control': 'no-store, must-revalidate',
+      'Cache-Control': cache,
     });
     res.end(data);
   });
