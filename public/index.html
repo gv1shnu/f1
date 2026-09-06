@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>APEX TV — Multiplayer F1</title>
+  <link rel="stylesheet" href="css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🏎️</text></svg>" />
+</head>
+<body>
+  <!-- ===== Loading / start screen ===== -->
+  <div id="start">
+    <div class="start-card">
+      <div class="brand"><span class="mark">▸</span> APEX <span class="tv">TV</span></div>
+      <p class="tagline">Multiplayer F1 — daylight at the Grand Prix circuit</p>
+      <label class="field">
+        <span>Driver name</span>
+        <input id="nameInput" maxlength="16" placeholder="Enter driver name" autocomplete="off" />
+      </label>
+      <button id="startBtn">ENTER THE GRID</button>
+      <div class="controls-hint">
+        <div><b>W</b> / <b>↑</b> throttle &nbsp;·&nbsp; <b>S</b> / <b>↓</b> brake · reverse</div>
+        <div><b>A</b> <b>D</b> / <b>←</b> <b>→</b> steer &nbsp;·&nbsp; <b>Space</b> handbrake &nbsp;·&nbsp; <b>C</b> camera &nbsp;·&nbsp; <b>M</b> mute</div>
+      </div>
+      <div id="loadState" class="load-state">Loading circuit…</div>
+    </div>
+  </div>
+
+  <!-- ===== F1 TV style HUD ===== -->
+  <div id="hud" class="hidden">
+    <div id="fps" class="hud-fps">-- FPS</div>
+    <div class="hud-topbar">
+      <div class="brand-mini"><span class="mark">▸</span> APEX <span class="tv">TV</span></div>
+      <div class="session">GRAND PRIX · PRACTICE</div>
+      <div class="drivers-online">🟢 <span id="onlineCount">1</span> ON TRACK</div>
+    </div>
+
+    <div class="hud-speedo">
+      <div class="gear" id="gear">N</div>
+      <div class="speed"><span id="speed">0</span><small>KM/H</small></div>
+      <div class="rev-lights" id="revLights"></div>
+    </div>
+
+    <div class="hud-timing">
+      <div class="row"><span>LAP</span><b id="lapCount">1</b></div>
+      <div class="row"><span>TIME</span><b id="lapTime">0:00.000</b></div>
+      <div class="row"><span>BEST</span><b id="bestTime">--:--.---</b></div>
+    </div>
+
+    <div id="leaderboard" class="hud-leaderboard"></div>
+    <div id="flash" class="hud-flash"></div>
+  </div>
+
+  <canvas id="scene"></canvas>
+
+  <!-- three.js (MIT) via jsDelivr CDN -->
+  <script type="importmap">
+  {
+    "imports": {
+      "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+      "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+    }
+  }
+  </script>
+  <script type="module" src="js/main.js?v=2"></script>
+</body>
+</html>
