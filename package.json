@@ -3,6 +3,9 @@
   "version": "0.1.0",
   "description": "Web-based multiplayer F1 driving game with a sunset cockpit view (Three.js + WebSockets).",
   "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "start": "node server.js",
     "dev": "node server.js"
