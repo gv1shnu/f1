@@ -85,16 +85,12 @@ export class Car {
     this.pos.x += Math.sin(this.heading) * this.speed * dt;
     this.pos.z += Math.cos(this.heading) * this.speed * dt;
 
-    // Soft wall: keep car within grass margin around the track.
-    const limit = TRACK_HALF_WIDTH + 10;
-    if (Math.abs(near.offset) > limit) {
-      const push = (Math.abs(near.offset) - limit) * 0.6;
-      const side = new THREE.Vector3()
-        .crossVectors(near.tangent, new THREE.Vector3(0, 1, 0)).normalize();
-      const sgn = Math.sign(near.offset);
-      this.pos.x -= side.x * sgn * push;
-      this.pos.z -= side.z * sgn * push;
-      this.speed *= 0.6;
+    // Safety net: if the car wanders a long way off the circuit, bring it back
+    // automatically so it can never get beached out on the grass. Closer than
+    // that you can always just drive back on (grass only slows you down).
+    if (Math.abs(near.offset) > 45) {
+      this.respawn();
+      return { offTrack: false, respawned: true };
     }
 
     // --- Lap counting: crossing the start line (near index 3) forward ---

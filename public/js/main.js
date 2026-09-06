@@ -260,6 +260,7 @@ let playerName = 'Driver';
 let running = false;
 let last = performance.now();
 const fpsEl = document.getElementById('fps');
+const offtrackEl = document.getElementById('offtrack');
 let __fpsAccum = 0, __fpsFrames = 0;
 
 let __frames = 0;
@@ -271,7 +272,9 @@ function loop(now) {
   last = now;
   if (!running) return;
   try {
-  car.update(dt, input);
+  const drive = car.update(dt, input);
+  offtrackEl.hidden = !drive.offTrack;
+  if (drive.respawned) hud.flash('↺ BACK ON TRACK', 1000);
 
   // Steering wheel visual.
   wheel.rotation.z = -car.steer * 1.6;
