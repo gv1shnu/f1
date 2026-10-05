@@ -7,11 +7,21 @@
     "node": ">=20"
   },
   "scripts": {
+    "build": "node scripts/build.mjs",
     "start": "node server.js",
-    "dev": "node server.js"
+    "prestart": "npm run build",
+    "dev": "npm run build && node server.js",
+    "test": "node --test tests/*.test.js",
+    "test:e2e": "playwright test",
+    "test:soak": "node scripts/soak.mjs"
   },
   "license": "MIT",
   "dependencies": {
+    "three": "0.160.0",
     "ws": "^8.18.0"
+  },
+  "devDependencies": {
+    "@playwright/test": "1.63.0",
+    "esbuild": "0.28.2"
   }
 }

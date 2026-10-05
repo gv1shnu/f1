@@ -10,10 +10,10 @@ from it is redistributed.
 | Asset | Author | License | Use |
 |-------|--------|---------|-----|
 | [three.js](https://threejs.org) `0.160.0` | Ricardo Cabello (mrdoob) & contributors | [MIT](https://github.com/mrdoob/three.js/blob/dev/LICENSE) | 3D rendering |
-| [three.js `Sky`](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/objects/Sky.js) addon | three.js contributors (Preetham/Hosek-Wilkie sky model) | MIT | Procedural sunset sky |
+| [three.js `Sky`](https://github.com/mrdoob/three.js/blob/dev/examples/jsm/objects/Sky.js) addon | three.js contributors (Preetham/Hosek-Wilkie sky model) | MIT | Procedural daylight sky |
 | [ws](https://github.com/websockets/ws) `^8.18` | Einar Otto Stangvik & contributors | [MIT](https://github.com/websockets/ws/blob/master/LICENSE) | WebSocket server |
 
-three.js is loaded at runtime from the [jsDelivr](https://www.jsdelivr.com) CDN.
+three.js is pinned in the dependency lockfile and bundled into the client at build time.
 
 ## Audio assets
 

@@ -1,3 +1,10 @@
 node_modules/
 npm-debug.log*
 .DS_Store
+dist/
+playwright-report/
+test-results/
+audit/
+recordings/*
+!recordings/three-client-race.mp4
+!recordings/preview-strip.png

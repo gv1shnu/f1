@@ -5,33 +5,12 @@
 import * as THREE from 'three';
 import { Sky } from 'three/addons/objects/Sky.js';
 
-export const TRACK_HALF_WIDTH = 8.5;   // metres either side of centreline
+import { Circuit, TRACK_HALF_WIDTH } from './circuit.js';
+export { TRACK_HALF_WIDTH } from './circuit.js';
 const KERB_WIDTH = 1.4;
-
-// Control points for a flowing circuit (x, z on the ground plane, y=0).
-// Loosely evokes a modern GP layout: long straight, hairpin, esses, sweepers.
-const CONTROL_POINTS = [
-  [0, 0], [0, -120], [12, -175], [55, -200], [110, -195], [150, -160],
-  [158, -110], [130, -70], [95, -55], [70, -20], [80, 30], [130, 55],
-  [175, 55], [200, 15], [195, -35], [220, -70], [265, -70], [285, -25],
-  [270, 30], [225, 75], [165, 110], [95, 120], [30, 115], [-15, 80],
-  [-25, 30], [-12, -10],
-].map(([x, z]) => new THREE.Vector3(x, 0, z));
-
-export class Track {
+export class Track extends Circuit {
   constructor() {
-    this.curve = new THREE.CatmullRomCurve3(CONTROL_POINTS, true, 'catmullrom', 0.5);
-    this.length = this.curve.getLength();
-
-    // Precompute a dense polyline of the centreline for fast nearest-point
-    // lookups (used for keeping cars on track + lap progress).
-    this.samples = 1500;
-    this.centerline = this.curve.getSpacedPoints(this.samples); // samples+1 pts
-    this.tangents = [];
-    for (let i = 0; i <= this.samples; i++) {
-      this.tangents.push(this.curve.getTangentAt(i / this.samples));
-    }
-
+    super();
     this.group = new THREE.Group();
     this._buildRoad();
     this._buildKerbs();
@@ -120,7 +99,7 @@ export class Track {
     ctx.fillStyle = '#f2f2f2'; ctx.fillRect(0, 0, 32, 8);
     const tex = new THREE.CanvasTexture(canvas);
     tex.wrapS = tex.wrapT = THREE.RepeatWrapping;
-    tex.repeat.set(this.length / 6, 1);
+    tex.repeat.set(1, 1);
     const mat = new THREE.MeshStandardMaterial({ map: tex, roughness: 0.6 });
 
     for (const dir of [1, -1]) {
@@ -280,35 +259,6 @@ export class Track {
     scene.add(amb);
   }
 
-  // ---- Queries used by physics / racing logic ------------------------------
-
-  // Returns { offset, index, tangent } — signed lateral offset from centreline
-  // (positive = right of travel direction), nearest sample index, and tangent.
-  nearest(pos, hintIndex = null) {
-    let best = Infinity, bi = 0;
-    // Search near the hint first for speed; fall back to full scan.
-    const scan = (from, to) => {
-      for (let i = from; i <= to; i++) {
-        const idx = ((i % (this.samples + 1)) + (this.samples + 1)) % (this.samples + 1);
-        const p = this.centerline[idx];
-        const dx = p.x - pos.x, dz = p.z - pos.z;
-        const d = dx * dx + dz * dz;
-        if (d < best) { best = d; bi = idx; }
-      }
-    };
-    if (hintIndex != null) {
-      scan(hintIndex - 60, hintIndex + 60);
-      if (best > 400) { best = Infinity; scan(0, this.samples); }
-    } else {
-      scan(0, this.samples);
-    }
-    const t = this.tangents[bi];
-    const p = this.centerline[bi];
-    const side = new THREE.Vector3().crossVectors(t, new THREE.Vector3(0, 1, 0)).normalize();
-    const offset = (pos.x - p.x) * side.x + (pos.z - p.z) * side.z;
-    return { offset, index: bi, tangent: t, point: p };
-  }
-
   // Nearest distance (metres) from an arbitrary point to the centreline.
   _distToTrack(x, z) {
     let best = Infinity;
@@ -320,18 +270,4 @@ export class Track {
     return Math.sqrt(best);
   }
 
-  // Grid start pose: a little behind the start/finish line, offset per slot.
-  startPose(slot = 0) {
-    const idx = 3;
-    const p = this.centerline[idx];
-    const t = this.tangents[idx];
-    const side = new THREE.Vector3().crossVectors(t, new THREE.Vector3(0, 1, 0)).normalize();
-    const back = t.clone().multiplyScalar(-(6 + slot * 7));
-    const lateral = side.clone().multiplyScalar((slot % 2 === 0 ? -1 : 1) * 3);
-    return {
-      position: new THREE.Vector3(p.x + back.x + lateral.x, 0, p.z + back.z + lateral.z),
-      heading: Math.atan2(t.x, t.z),
-      index: idx,
-    };
-  }
 }

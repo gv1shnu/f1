@@ -22,7 +22,7 @@ export class GameAudio {
     this.ctx = new AC();
 
     this.master = this.ctx.createGain();
-    this.master.gain.value = 0.9;
+    this.master.gain.value = this.muted ? 0 : 0.9;
     this.master.connect(this.ctx.destination);
 
     // --- Engine (looped sample) ---
@@ -59,6 +59,7 @@ export class GameAudio {
   async _load(url) {
     if (this._buffers[url]) return this._buffers[url];
     const res = await fetch(url);
+    if (!res.ok) throw new Error(`Audio HTTP ${res.status}`);
     const arr = await res.arrayBuffer();
     const buf = await this.ctx.decodeAudioData(arr);
     this._buffers[url] = buf;

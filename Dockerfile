@@ -1,17 +1,17 @@
-# Container image for any Docker host (Fly.io, Railway, a VPS, etc.)
-FROM node:22-alpine
-
+FROM node:22-alpine AS build
 WORKDIR /app
-
-# Install production dependencies first (better layer caching).
 COPY package*.json ./
-RUN npm install --omit=dev
-
-# App source.
+RUN npm ci
 COPY . .
+RUN npm run build
 
+FROM node:22-alpine
+WORKDIR /app
+COPY package*.json ./
+RUN npm ci --omit=dev
+COPY --from=build /app/dist ./dist
+COPY --from=build /app/public/js ./public/js
+COPY server.js ./
 ENV NODE_ENV=production
-# The server reads PORT from the environment (defaults to 3000).
 EXPOSE 3000
-
 CMD ["node", "server.js"]
